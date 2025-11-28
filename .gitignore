@@ -1,0 +1,44 @@
+# Загальні системні файли
+.DS_Store
+Thumbs.db
+
+# Бібліотеки та артефакти Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+/bin/
+/include/
+/lib/
+/lib64/
+
+# Пакунки
+dist/
+build/
+*.egg-info
+.tox/
+
+# Віртуальне середовище (зазвичай називається .venv або venv)
+# Оскільки ви використовуєте .venv, переконайтеся, що ця назва присутня:
+.venv/
+
+# Файли журналів та бази даних
+*.log
+*.sqlite
+*.db
+
+# Файли IDE/редакторів
+.idea/             # PyCharm, IntelliJ
+.vscode/           # VS Code
+*.sublime-project
+*.sublime-workspace
+*.swp              # Vim
+
+# Результати візуалізації (matplotlib)
+*.png
+*.jpg
+*.jpeg
+*.gif
