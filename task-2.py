@@ -1,4 +1,5 @@
 import networkx as nx
+from collections import deque
 
 
 def create_base_graph():
@@ -31,45 +32,81 @@ def create_base_graph():
     return G
 
 
-def find_dfs_path(graph, start, end):
-    """Знаходить один шлях за допомогою DFS-подібного обходу."""
-    # nx.all_simple_paths поводиться як DFS, коли повертає перший шлях
-    try:
-        paths_generator = nx.all_simple_paths(graph, start, end)
-        return next(paths_generator, None)
-    except:
-        return None
+# --- Власна Реалізація BFS (Пошук у Ширину) ---
+def custom_bfs(graph, start, end):
+    """Знаходить найкоротший шлях за кількістю ребер, використовуючи чергу."""
+    # Черга для обходу
+    queue = deque([[start]])
+    # Множина для відстеження відвіданих вершин
+    visited = {start}
+
+    while queue:
+        # Вилучаємо перший шлях
+        path = queue.popleft()
+        node = path[-1]
+
+        # Якщо знайдено цільову вершину
+        if node == end:
+            return path
+
+        # Додаємо сусідів до черги
+        for neighbor in graph.neighbors(node):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                new_path = path + [neighbor]
+                queue.append(new_path)
+    return None
+
+
+# --- Власна Реалізація DFS (Пошук у Глибину) ---
+def custom_dfs(graph, start, end):
+    """Знаходить один шлях, використовуючи стек (рекурсивно або ітеративно).
+    Тут використано ітеративний підхід зі стеком.
+    """
+    # Стек для обходу. Зберігаємо (вершина, шлях_до_неї)
+    stack = [(start, [start])]
+    visited = {start}
+
+    while stack:
+        # Вилучаємо останній елемент (LIFO)
+        node, path = stack.pop()
+
+        if node == end:
+            return path
+
+        # Обхід сусідів у зворотному порядку, щоб імітувати рекурсивний DFS
+        # (Забезпечує такий самий порядок, як у першому завданні: Центр -> Вокзал)
+        for neighbor in reversed(list(graph.neighbors(node))):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                new_path = path + [neighbor]
+                stack.append((neighbor, new_path))
+    return None
 
 
 def task_2_dfs_bfs_search():
-    """Виконує пошук шляхів за допомогою DFS та BFS і порівнює результати."""
+    """Виконує пошук шляхів за допомогою власно реалізованих DFS та BFS."""
     G = create_base_graph()
-    print("\n--- 🔍 ЗАВДАННЯ 2: Пошук у Глибину (DFS) та Ширину (BFS) ---")
+    print("\n--- 🔍 ЗАВДАННЯ 2: Власна Реалізація BFS та DFS ---")
 
     start_node = "Центр"
     end_node = "Житловий Масив"
 
-    # 1. Пошук у Ширину (BFS) - знаходить найкоротший шлях за кількістю ребер
-    try:
-        bfs_path = nx.shortest_path(G, source=start_node, target=end_node)
-        bfs_length = len(bfs_path) - 1
-        print(f"1. Шлях BFS (найкоротший за ребрами) від {start_node} до {end_node}:")
-        print(f"   - Шлях: {bfs_path}")
-        print(f"   - Довжина (кількість ребер): {bfs_length}")
-    except nx.NetworkXNoPath:
-        print(f"Шлях BFS не знайдено.")
+    # 1. Власна Реалізація BFS
+    bfs_path = custom_bfs(G, start_node, end_node)
+    bfs_length = len(bfs_path) - 1 if bfs_path else 0
 
-    # 2. Пошук у Глибину (DFS)
-    dfs_path = find_dfs_path(G, start_node, end_node)
+    print(f"1. Шлях BFS (власна реалізація) від {start_node} до {end_node}:")
+    print(f"   - Шлях: {bfs_path}")
+    print(f"   - Довжина (кількість ребер): {bfs_length}")
+
+    # 2. Власна Реалізація DFS
+    dfs_path = custom_dfs(G, start_node, end_node)
     dfs_length = len(dfs_path) - 1 if dfs_path else 0
 
-    print(f"\n2. Шлях DFS (перший знайдений) від {start_node} до {end_node}:")
+    print(f"\n2. Шлях DFS (власна реалізація) від {start_node} до {end_node}:")
     print(f"   - Шлях: {dfs_path}")
     print(f"   - Довжина (кількість ребер): {dfs_length}")
-
-    print(
-        "\n*Порівняння та пояснення результатів BFS і DFS оформлено у файлі README.md*"
-    )
 
 
 if __name__ == "__main__":
